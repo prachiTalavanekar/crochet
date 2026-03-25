@@ -7,7 +7,9 @@ export default function Home() {
   const [featured, setFeatured] = useState([]);
 
   useEffect(() => {
-    api.get('/api/products').then(res => setFeatured(Array.isArray(res.data) ? res.data.slice(0, 4) : []));
+    api.get('/api/products')
+      .then(res => setFeatured(Array.isArray(res.data) ? res.data.slice(0, 4) : []))
+      .catch(() => setFeatured([]));
   }, []);
 
   return (

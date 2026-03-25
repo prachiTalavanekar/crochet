@@ -19,7 +19,10 @@ export default function Shop() {
   useEffect(() => {
     setLoading(true);
     const url = category ? `/api/products?category=${category}` : '/api/products';
-    api.get(url).then(res => { setProducts(Array.isArray(res.data) ? res.data : []); setLoading(false); });
+    api.get(url)
+      .then(res => { setProducts(Array.isArray(res.data) ? res.data : []); })
+      .catch(() => { setProducts([]); })
+      .finally(() => { setLoading(false); });
   }, [category]);
 
   return (

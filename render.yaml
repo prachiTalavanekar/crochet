@@ -35,4 +35,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        sync: false   # set to your backend Render URL, e.g. https://crochet-store-backend.onrender.com
+        value: https://crochet-bakend.onrender.com
