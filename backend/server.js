@@ -9,11 +9,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 // Upload route — images stored on Cloudinary
-const upload = require('./middleware/upload');
+const { multerUpload, uploadToCloudinary } = require('./middleware/upload');
 const { protect, adminOnly } = require('./middleware/auth');
-app.post('/api/upload', protect, adminOnly, upload.array('images', 10), (req, res) => {
-  const urls = req.files.map(f => f.path); // Cloudinary returns full HTTPS URL in f.path
-  res.json({ urls });
+app.post('/api/upload', protect, adminOnly, multerUpload.array('images', 10), async (req, res) => {
+  try {
+    if (!req.files?.length) return res.status(400).json({ message: 'No files uploaded' });
+    const urls = await Promise.all(req.files.map(f => uploadToCloudinary(f.buffer)));
+    res.json({ urls });
+  } catch (err) {
+    console.error('Cloudinary upload error:', err.message);
+    res.status(500).json({ message: 'Upload failed: ' + err.message });
+  }
 });
 
 // Routes

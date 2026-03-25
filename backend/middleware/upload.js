@@ -1,6 +1,6 @@
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
+const { Readable } = require('stream');
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -8,13 +8,25 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: 'crochet-store',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    transformation: [{ width: 800, crop: 'limit' }],
+// Store files in memory, then stream to Cloudinary
+const multerUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|webp/;
+    const ok = allowed.test(file.mimetype);
+    cb(ok ? null : new Error('Only images allowed'), ok);
   },
 });
 
-module.exports = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
+// Upload a single buffer to Cloudinary, returns secure_url
+const uploadToCloudinary = (buffer) =>
+  new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'crochet-store', transformation: [{ width: 800, crop: 'limit' }] },
+      (err, result) => (err ? reject(err) : resolve(result.secure_url))
+    );
+    Readable.from(buffer).pipe(stream);
+  });
+
+module.exports = { multerUpload, uploadToCloudinary };
