@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
 
 const STATUS = ['Processing', 'Packed', 'Shipped', 'Delivered', 'Cancelled'];
@@ -20,18 +20,18 @@ export default function AdminOrders() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    axios.get('/api/admin/orders', { headers }).then(r => setOrders(r.data));
+    api.get('/api/admin/orders', { headers }).then(r => setOrders(Array.isArray(r.data) ? r.data : []));
   }, []);
 
   const updateStatus = async (id, orderStatus) => {
-    const { data } = await axios.put(`/api/admin/orders/${id}`, { orderStatus }, { headers });
+    const { data } = await api.put(`/api/admin/orders/${id}`, { orderStatus }, { headers });
     setOrders(prev => prev.map(o => o._id === id ? { ...o, orderStatus: data.orderStatus } : o));
     if (selected?._id === id) setSelected({ ...selected, orderStatus: data.orderStatus });
   };
 
   const del = async (id) => {
     if (!window.confirm('Delete this order?')) return;
-    await axios.delete(`/api/admin/orders/${id}`, { headers });
+    await api.delete(`/api/admin/orders/${id}`, { headers });
     setOrders(prev => prev.filter(o => o._id !== id));
     if (selected?._id === id) setSelected(null);
   };
@@ -143,3 +143,6 @@ export default function AdminOrders() {
     </div>
   );
 }
+
+
+

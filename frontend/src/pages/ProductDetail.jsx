@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { useCart } from '../context/CartContext';
 
 const imgSrc = (src) => {
@@ -20,7 +20,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     setActiveImg(0);
-    axios.get(`/api/products/${id}`).then(res => setProduct(res.data));
+    api.get(`/api/products/${id}`).then(res => setProduct(res.data));
   }, [id]);
 
   const handleAdd = () => {
@@ -114,3 +114,5 @@ export default function ProductDetail() {
     </div>
   );
 }
+
+

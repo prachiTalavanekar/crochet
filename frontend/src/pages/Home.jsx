@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import ProductCard from '../components/ProductCard';
 
 export default function Home() {
   const [featured, setFeatured] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/products').then(res => setFeatured(res.data.slice(0, 4)));
+    api.get('/api/products').then(res => setFeatured(Array.isArray(res.data) ? res.data.slice(0, 4) : []));
   }, []);
 
   return (
@@ -69,3 +69,5 @@ export default function Home() {
     </div>
   );
 }
+
+

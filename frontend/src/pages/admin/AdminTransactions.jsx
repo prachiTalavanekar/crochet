@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
 
 const STATUS_COLOR = {
@@ -16,7 +16,7 @@ export default function AdminTransactions() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    axios.get('/api/admin/transactions', { headers }).then(r => setTxns(r.data));
+    api.get('/api/admin/transactions', { headers }).then(r => setTxns(Array.isArray(r.data) ? r.data : []));
   }, []);
 
   const filtered = txns.filter(t => {
@@ -101,3 +101,6 @@ export default function AdminTransactions() {
     </div>
   );
 }
+
+
+

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
@@ -12,7 +12,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setError('');
     try {
-      const { data } = await axios.post('/api/auth/register', form);
+      const { data } = await api.post('/api/auth/register', form);
       login(data);
       navigate('/');
     } catch (err) {
@@ -54,3 +54,5 @@ export default function Register() {
     </div>
   );
 }
+
+

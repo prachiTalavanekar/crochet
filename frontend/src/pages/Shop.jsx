@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import ProductCard from '../components/ProductCard';
 
 const CATEGORIES = [
@@ -19,7 +19,7 @@ export default function Shop() {
   useEffect(() => {
     setLoading(true);
     const url = category ? `/api/products?category=${category}` : '/api/products';
-    axios.get(url).then(res => { setProducts(res.data); setLoading(false); });
+    api.get(url).then(res => { setProducts(Array.isArray(res.data) ? res.data : []); setLoading(false); });
   }, [category]);
 
   return (
@@ -57,3 +57,5 @@ export default function Shop() {
     </div>
   );
 }
+
+

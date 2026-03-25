@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
 
 const empty = { name: '', description: '', price: '', category: 'bouquets', stock: '', images: [] };
@@ -17,7 +17,7 @@ export default function AdminProducts() {
   const [previews, setPreviews] = useState([]);
   const fileRef = useRef();
 
-  const load = () => axios.get('/api/products').then(r => setProducts(r.data));
+  const load = () => api.get('/api/products').then(r => setProducts(Array.isArray(r.data) ? r.data : []));
   useEffect(() => { load(); }, []);
 
   const flash = (text, type = 'success') => {
@@ -39,7 +39,7 @@ export default function AdminProducts() {
     try {
       const fd = new FormData();
       files.forEach(f => fd.append('images', f));
-      const { data } = await axios.post('/api/upload', fd, {
+      const { data } = await api.post('/api/upload', fd, {
         headers: { ...headers, 'Content-Type': 'multipart/form-data' }
       });
       setForm(prev => ({ ...prev, images: [...prev.images, ...data.urls] }));
@@ -62,10 +62,10 @@ export default function AdminProducts() {
     try {
       const payload = { ...form, image: form.images[0] || '' };
       if (editId) {
-        await axios.put(`/api/admin/products/${editId}`, payload, { headers });
+        await api.put(`/api/admin/products/${editId}`, payload, { headers });
         flash('✓ Product updated');
       } else {
-        await axios.post('/api/admin/products', payload, { headers });
+        await api.post('/api/admin/products', payload, { headers });
         flash('✓ Product added');
       }
       setForm(empty); setEditId(null); setPreviews([]); load();
@@ -76,7 +76,7 @@ export default function AdminProducts() {
 
   const del = async (id) => {
     if (!window.confirm('Delete this product?')) return;
-    await axios.delete(`/api/admin/products/${id}`, { headers });
+    await api.delete(`/api/admin/products/${id}`, { headers });
     load();
   };
 
@@ -237,3 +237,6 @@ export default function AdminProducts() {
     </div>
   );
 }
+
+
+

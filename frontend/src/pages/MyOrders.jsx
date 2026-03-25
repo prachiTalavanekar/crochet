@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../context/AuthContext';
 
 const STATUS_COLOR = {
@@ -16,8 +16,8 @@ export default function MyOrders() {
   const { user } = useAuth();
 
   useEffect(() => {
-    axios.get('/api/orders/myorders', { headers: { Authorization: `Bearer ${user.token}` } })
-      .then(res => { setOrders(res.data); setLoading(false); });
+    api.get('/api/orders/myorders', { headers: { Authorization: `Bearer ${user.token}` } })
+      .then(res => { setOrders(Array.isArray(res.data) ? res.data : []); setLoading(false); });
   }, []);
 
   if (loading) return <p className="text-center py-20 text-gray-400 text-sm">Loading orders...</p>;
@@ -67,3 +67,5 @@ export default function MyOrders() {
     </div>
   );
 }
+
+

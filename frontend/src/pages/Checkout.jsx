@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,7 +18,7 @@ export default function Checkout() {
     setLoading(true); setError('');
     try {
       const items = cart.map(i => ({ product: i._id, name: i.name, price: i.price, quantity: i.quantity }));
-      const { data } = await axios.post('/api/orders',
+      const { data } = await api.post('/api/orders',
         { items, shipping: form, totalPrice: total, paymentMethod },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -98,3 +98,5 @@ export default function Checkout() {
     </div>
   );
 }
+
+

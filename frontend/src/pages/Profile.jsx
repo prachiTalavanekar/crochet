@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../context/AuthContext';
 
 const imgSrc = (src) => {
@@ -26,7 +26,7 @@ export default function Profile() {
   const flashPw = (m, type = 'success') => { setPwMsg({ text: m, type }); setTimeout(() => setPwMsg({ text: '', type: '' }), 3000); };
 
   useEffect(() => {
-    axios.get('/api/profile', { headers }).then(r => {
+    api.get('/api/profile', { headers }).then(r => {
       setProfile(r.data);
       setForm({ name: r.data.name || '', phone: r.data.phone || '', address: r.data.address || '' });
     });
@@ -39,7 +39,7 @@ export default function Profile() {
     try {
       const fd = new FormData();
       fd.append('avatar', file);
-      const { data } = await axios.post('/api/profile/avatar', fd, {
+      const { data } = await api.post('/api/profile/avatar', fd, {
         headers: { ...headers, 'Content-Type': 'multipart/form-data' }
       });
       setProfile(data);
@@ -57,7 +57,7 @@ export default function Profile() {
     e.preventDefault();
     setSaving(true);
     try {
-      const { data } = await axios.put('/api/profile', form, { headers });
+      const { data } = await api.put('/api/profile', form, { headers });
       setProfile(data);
       updateUser({ name: data.name });
       flash('Profile updated successfully!');
@@ -73,7 +73,7 @@ export default function Profile() {
     if (pwForm.newPassword !== pwForm.confirm) return flashPw('Passwords do not match', 'error');
     if (pwForm.newPassword.length < 6) return flashPw('Password must be at least 6 characters', 'error');
     try {
-      await axios.put('/api/profile/password', {
+      await api.put('/api/profile/password', {
         currentPassword: pwForm.currentPassword,
         newPassword: pwForm.newPassword
       }, { headers });
@@ -204,3 +204,5 @@ export default function Profile() {
     </div>
   );
 }
+
+

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useAuth } from '../context/AuthContext';
 
 const STATUS_OPTIONS = ['Processing', 'Packed', 'Shipped', 'Delivered'];
@@ -40,37 +40,37 @@ export default function Admin() {
 
   useEffect(() => {
     if (tab === 'dashboard') {
-      axios.get('/api/admin/stats', { headers }).then(r => setStats(r.data));
+      api.get('/api/admin/stats', { headers }).then(r => setStats(r.data));
     } else if (tab === 'orders') {
-      axios.get('/api/admin/orders', { headers }).then(r => setOrders(r.data));
+      api.get('/api/admin/orders', { headers }).then(r => setOrders(Array.isArray(r.data) ? r.data : []));
     } else if (tab === 'users') {
-      axios.get('/api/admin/users', { headers }).then(r => setUsers(r.data));
+      api.get('/api/admin/users', { headers }).then(r => setUsers(Array.isArray(r.data) ? r.data : []));
     } else if (tab === 'products') {
-      axios.get('/api/products').then(r => setProducts(r.data));
+      api.get('/api/products').then(r => setProducts(Array.isArray(r.data) ? r.data : []));
     }
   }, [tab]);
 
   // ── ORDER ACTIONS ──
   const updateStatus = async (id, orderStatus) => {
-    const { data } = await axios.put(`/api/admin/orders/${id}`, { orderStatus }, { headers });
+    const { data } = await api.put(`/api/admin/orders/${id}`, { orderStatus }, { headers });
     setOrders(prev => prev.map(o => o._id === id ? { ...o, orderStatus: data.orderStatus } : o));
   };
 
   const deleteOrder = async (id) => {
     if (!window.confirm('Delete this order?')) return;
-    await axios.delete(`/api/admin/orders/${id}`, { headers });
+    await api.delete(`/api/admin/orders/${id}`, { headers });
     setOrders(prev => prev.filter(o => o._id !== id));
   };
 
   // ── USER ACTIONS ──
   const toggleAdmin = async (id, isAdmin) => {
-    const { data } = await axios.put(`/api/admin/users/${id}`, { isAdmin: !isAdmin }, { headers });
+    const { data } = await api.put(`/api/admin/users/${id}`, { isAdmin: !isAdmin }, { headers });
     setUsers(prev => prev.map(u => u._id === id ? { ...u, isAdmin: data.isAdmin } : u));
   };
 
   const deleteUser = async (id) => {
     if (!window.confirm('Delete this user?')) return;
-    await axios.delete(`/api/admin/users/${id}`, { headers });
+    await api.delete(`/api/admin/users/${id}`, { headers });
     setUsers(prev => prev.filter(u => u._id !== id));
   };
 
@@ -79,16 +79,16 @@ export default function Admin() {
     e.preventDefault();
     try {
       if (editId) {
-        await axios.put(`/api/admin/products/${editId}`, form, { headers });
+        await api.put(`/api/admin/products/${editId}`, form, { headers });
         setProductMsg('✓ Product updated!');
       } else {
-        await axios.post('/api/admin/products', form, { headers });
+        await api.post('/api/admin/products', form, { headers });
         setProductMsg('✓ Product added!');
       }
       setForm(emptyProduct);
       setEditId(null);
-      const res = await axios.get('/api/products');
-      setProducts(res.data);
+      const res = await api.get('/api/products');
+      setProducts(Array.isArray(res.data) ? res.data : []);
       setTimeout(() => setProductMsg(''), 3000);
     } catch (err) {
       setProductMsg(err.response?.data?.message || 'Error saving product');
@@ -97,7 +97,7 @@ export default function Admin() {
 
   const deleteProduct = async (id) => {
     if (!window.confirm('Delete this product?')) return;
-    await axios.delete(`/api/admin/products/${id}`, { headers });
+    await api.delete(`/api/admin/products/${id}`, { headers });
     setProducts(prev => prev.filter(p => p._id !== id));
   };
 
@@ -200,3 +200,4 @@ export default function Admin() {
                       <p className="text-xs text-gray-400 mt-0.5">
                         #{order._id.slice(-8).toUpperCase()} · {new Date(order.createdAt).toLocaleDateString()}
        
+

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
 
 export default function AdminUsers() {
@@ -9,22 +9,22 @@ export default function AdminUsers() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    axios.get('/api/admin/users', { headers }).then(r => setUsers(r.data));
+    api.get('/api/admin/users', { headers }).then(r => setUsers(Array.isArray(r.data) ? r.data : []));
   }, []);
 
   const toggleAdmin = async (u) => {
-    const { data } = await axios.put(`/api/admin/users/${u._id}`, { isAdmin: !u.isAdmin }, { headers });
+    const { data } = await api.put(`/api/admin/users/${u._id}`, { isAdmin: !u.isAdmin }, { headers });
     setUsers(prev => prev.map(x => x._id === u._id ? { ...x, isAdmin: data.isAdmin } : x));
   };
 
   const toggleBlock = async (u) => {
-    const { data } = await axios.put(`/api/admin/users/${u._id}`, { blocked: !u.blocked }, { headers });
+    const { data } = await api.put(`/api/admin/users/${u._id}`, { blocked: !u.blocked }, { headers });
     setUsers(prev => prev.map(x => x._id === u._id ? { ...x, blocked: data.blocked } : x));
   };
 
   const del = async (id) => {
     if (!window.confirm('Delete this user?')) return;
-    await axios.delete(`/api/admin/users/${id}`, { headers });
+    await api.delete(`/api/admin/users/${id}`, { headers });
     setUsers(prev => prev.filter(u => u._id !== id));
   };
 
@@ -94,3 +94,6 @@ export default function AdminUsers() {
     </div>
   );
 }
+
+
+

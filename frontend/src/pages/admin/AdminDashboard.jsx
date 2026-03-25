@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 
@@ -9,7 +9,7 @@ export default function AdminDashboard() {
   const headers = { Authorization: `Bearer ${user.token}` };
 
   useEffect(() => {
-    axios.get('/api/admin/stats', { headers }).then(r => setStats(r.data));
+    api.get('/api/admin/stats', { headers }).then(r => setStats(r.data));
   }, []);
 
   const cards = stats ? [
@@ -70,3 +70,5 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+

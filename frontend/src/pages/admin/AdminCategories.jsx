@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
 
 const empty = { name: '', slug: '', emoji: '🧶', description: '' };
@@ -12,7 +12,7 @@ export default function AdminCategories() {
   const [editId, setEditId] = useState(null);
   const [msg, setMsg] = useState('');
 
-  const load = () => axios.get('/api/categories').then(r => setCats(r.data));
+  const load = () => api.get('/api/categories').then(r => setCats(Array.isArray(r.data) ? r.data : []));
   useEffect(() => { load(); }, []);
 
   const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 3000); };
@@ -21,10 +21,10 @@ export default function AdminCategories() {
     e.preventDefault();
     try {
       if (editId) {
-        await axios.put(`/api/categories/${editId}`, form, { headers });
+        await api.put(`/api/categories/${editId}`, form, { headers });
         flash('✓ Category updated');
       } else {
-        await axios.post('/api/categories', form, { headers });
+        await api.post('/api/categories', form, { headers });
         flash('✓ Category added');
       }
       setForm(empty); setEditId(null); load();
@@ -33,7 +33,7 @@ export default function AdminCategories() {
 
   const del = async (id) => {
     if (!window.confirm('Delete this category?')) return;
-    await axios.delete(`/api/categories/${id}`, { headers });
+    await api.delete(`/api/categories/${id}`, { headers });
     load();
   };
 
@@ -97,3 +97,6 @@ export default function AdminCategories() {
     </div>
   );
 }
+
+
+

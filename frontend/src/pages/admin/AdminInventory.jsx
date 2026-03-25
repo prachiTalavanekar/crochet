@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { useAuth } from '../../context/AuthContext';
 
 const emoji = (cat) => cat === 'bouquets' ? '🌸' : cat === 'keychains' ? '🔑' : '🌼';
@@ -11,11 +11,11 @@ export default function AdminInventory() {
   const [editing, setEditing] = useState({});
 
   useEffect(() => {
-    axios.get('/api/admin/inventory', { headers }).then(r => setProducts(r.data));
+    api.get('/api/admin/inventory', { headers }).then(r => setProducts(Array.isArray(r.data) ? r.data : []));
   }, []);
 
   const updateStock = async (id, stock) => {
-    const { data } = await axios.put(`/api/admin/inventory/${id}`, { stock: Number(stock) }, { headers });
+    const { data } = await api.put(`/api/admin/inventory/${id}`, { stock: Number(stock) }, { headers });
     setProducts(prev => prev.map(p => p._id === id ? { ...p, stock: data.stock } : p));
     setEditing(prev => { const n = { ...prev }; delete n[id]; return n; });
   };
@@ -95,3 +95,6 @@ export default function AdminInventory() {
     </div>
   );
 }
+
+
+
