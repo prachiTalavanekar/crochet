@@ -2,7 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
-const upload = require('../middleware/upload');
+const { multerUpload, uploadToCloudinary } = require('../middleware/upload');
 
 // Get my profile
 router.get('/', protect, async (req, res) => {
@@ -45,10 +45,10 @@ router.put('/password', protect, async (req, res) => {
 });
 
 // Upload avatar
-router.post('/avatar', protect, upload.single('avatar'), async (req, res) => {
+router.post('/avatar', protect, multerUpload.single('avatar'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-    const avatar = `/uploads/${req.file.filename}`;
+    const avatar = await uploadToCloudinary(req.file.buffer);
     const user = await User.findByIdAndUpdate(req.user.id, { avatar }, { new: true }).select('-password');
     res.json(user);
   } catch (err) {
