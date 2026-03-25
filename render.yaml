@@ -15,6 +15,12 @@ services:
         sync: false   # set this manually in Render dashboard
       - key: PORT
         value: 5000
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dyzfa7ov
+      - key: CLOUDINARY_API_KEY
+        value: 487983113985425
+      - key: CLOUDINARY_API_SECRET
+        sync: false   # set manually in Render dashboard
 
   # Frontend — Vite/React (static site)
   - type: web

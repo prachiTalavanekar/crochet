@@ -82,7 +82,7 @@ export default function AdminProducts() {
 
   const startEdit = (p) => {
     setForm({ name: p.name, description: p.description, price: p.price, category: p.category, stock: p.stock, images: p.images || (p.image ? [p.image] : []) });
-    setPreviews(p.images?.length ? p.images.map(img => img.startsWith('/uploads') ? `http://localhost:5000${img}` : img) : p.image ? [`http://localhost:5000${p.image}`] : []);
+    setPreviews(p.images?.length ? p.images : p.image ? [p.image] : []);
     setEditId(p._id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -216,7 +216,7 @@ export default function AdminProducts() {
                 <div key={p._id} className="flex items-center gap-3 bg-white border border-pastel-100 rounded-xl p-3 hover:shadow-sm transition">
                   <div className="w-12 h-12 bg-pastel-50 rounded-xl flex items-center justify-center text-xl flex-shrink-0 overflow-hidden">
                     {thumb
-                      ? <img src={thumb.startsWith('/uploads') ? `http://localhost:5000${thumb}` : thumb} alt="" className="w-full h-full object-cover" />
+                      ? <img src={thumb} alt="" className="w-full h-full object-cover" />
                       : emoji(p.category)}
                   </div>
                   <div className="flex-1 min-w-0">

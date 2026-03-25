@@ -6,7 +6,7 @@ import { useCart } from '../context/CartContext';
 const imgSrc = (src) => {
   if (!src) return '';
   if (src.startsWith('http')) return src;
-  return `http://localhost:5000${src}`;
+  return `${import.meta.env.VITE_API_URL || "http://localhost:5000"}${src}`;
 };
 
 export default function ProductDetail() {
@@ -114,5 +114,6 @@ export default function ProductDetail() {
     </div>
   );
 }
+
 
 

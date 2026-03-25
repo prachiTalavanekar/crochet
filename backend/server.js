@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 const seedAdmin = require('./seedAdmin');
 
@@ -9,13 +8,11 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Upload route
+// Upload route — images stored on Cloudinary
 const upload = require('./middleware/upload');
 const { protect, adminOnly } = require('./middleware/auth');
 app.post('/api/upload', protect, adminOnly, upload.array('images', 10), (req, res) => {
-  const urls = req.files.map(f => `/uploads/${f.filename}`);
+  const urls = req.files.map(f => f.path); // Cloudinary returns full HTTPS URL in f.path
   res.json({ urls });
 });
 
